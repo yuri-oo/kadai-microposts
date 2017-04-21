@@ -1,6 +1,6 @@
 <ul class = "media-list">
   <% microposts.each do |micropost| %>
-    <user = micropost.user %>
+    <% user = micropost.user %>
     <li class="media">
       <div class="media-left">
         <img class="media-objct img-rounded" src="<%= gravatar_url(current_user, options = { size: 50 }) %>" alt="">
@@ -15,6 +15,17 @@
         <div>
           <% if current_user == micropost.user %>
             <%= link_to "Delete", micropost, method: :delete, data: { confirm: "You sure?" }, class: 'btn btn-danger btn-xs' %>
+          <% end %>
+          <% if current_user.favo?(micropost) %>
+            <%= form_for(current_user.favorites.find_by(tweet_id: micropost.id), html: { method: :delete }) do |f| %>
+              <%= hidden_field_tag :tweet_id, micropost.id %>
+              <%= f.submit 'Unfavorite', class: 'btn btn-warning btn-xs' %>
+            <% end %>
+          <% else %>
+            <%= form_for(current_user.favorites.build) do |f| %>
+              <%= hidden_field_tag :tweet_id, micropost.id %>
+              <%= f.submit 'Favorite', class: 'btn btn-default btn-xs' %>
+            <% end %>
           <% end %>
         </div>
       </div>
